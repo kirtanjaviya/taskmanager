@@ -1,9 +1,10 @@
-import { getMonthGrid } from '../utils/dateUtils';
+import { getMonthGrid, getDayName, getTodayStr } from '../utils/dateUtils';
 import clsx from 'clsx';
 
-export default function MonthGrid({ year, month, allTasks, onDayClick }) {
+export default function MonthGrid({ year, month, allTasks, recurringTasks, onDayClick }) {
   const days = getMonthGrid(year, month);
   const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const todayStr = getTodayStr();
 
   // Helper to determine color based on completion percentage
   const getColorClass = (completedCount, totalCount) => {
@@ -33,7 +34,27 @@ export default function MonthGrid({ year, month, allTasks, onDayClick }) {
           }
 
           const dayNumber = parseInt(dateStr.split('-')[2], 10);
-          const tasksForDay = allTasks[dateStr] || [];
+          
+          let tasksForDay = allTasks[dateStr];
+
+          if (tasksForDay === undefined && dateStr <= todayStr && recurringTasks) {
+            const dayName = getDayName(dateStr);
+            tasksForDay = recurringTasks.filter(task => {
+              if (!task.active) return false;
+              if (task.schedule === 'daily') return true;
+              if (task.schedule === 'weekly' && task.days.includes(dayName)) return true;
+              return false;
+            }).map(t => ({
+              id: `missed-${dateStr}-${t.id}`,
+              title: t.title,
+              completed: false,
+              type: 'recurring',
+              recurringId: t.id
+            }));
+          } else {
+            tasksForDay = tasksForDay || [];
+          }
+
           const totalTasks = tasksForDay.length;
           const completedTasks = tasksForDay.filter(t => t.completed).length;
           

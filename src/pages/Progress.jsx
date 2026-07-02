@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useTasks } from '../hooks/useTasks';
+import { useRecurring } from '../hooks/useRecurring';
 import MonthGrid from '../components/MonthGrid';
 import DayDetail from '../components/DayDetail';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Progress() {
   const { allTasks } = useTasks();
+  const { recurringTasks } = useRecurring();
   
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
@@ -70,6 +72,7 @@ export default function Progress() {
         year={year} 
         month={month} 
         allTasks={allTasks} 
+        recurringTasks={recurringTasks}
         onDayClick={handleDayClick} 
       />
 
