@@ -41,6 +41,11 @@ export default function MonthGrid({ year, month, allTasks, recurringTasks, onDay
             const dayName = getDayName(dateStr);
             tasksForDay = recurringTasks.filter(task => {
               if (!task.active) return false;
+              
+              // Only apply recurring tasks on or after their creation date
+              const taskCreatedAt = task.createdAt || '2026-06-24';
+              if (dateStr < taskCreatedAt) return false;
+
               if (task.schedule === 'daily') return true;
               if (task.schedule === 'weekly' && task.days.includes(dayName)) return true;
               return false;

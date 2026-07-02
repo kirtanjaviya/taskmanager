@@ -20,7 +20,8 @@ export function useRecurring() {
       title,
       schedule, // 'daily' or 'weekly'
       days: schedule === 'weekly' ? days : [],
-      active: true
+      active: true,
+      createdAt: getTodayStr()
     };
     saveRecurring([...recurringTasks, newTask]);
   };
